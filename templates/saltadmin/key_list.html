@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+
+<div class="container">
+        <!-- Page-Title -->
+        <div class="row">
+            <div class="col-sm-12">
+                <h4 class="page-title">SALT 管理</h4>
+                <ol class="breadcrumb">
+                    <li>
+                        <a href="{% url 'SaltMasterList' %}">SaltStack Master管理</a>
+                    </li>
+
+                    <li class="active">
+                        SaltStack Master列表
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="row">
+             <div class="col-sm-10">
+                   <div class="card-box">
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="panel-group" id="accordion-test-2">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#accordion-test-2" href="#collapseOne-2" aria-expanded="true" class="">
+                                                    已经接受的Key <span class="badge badge-warning" style="margin-top: 0;background-color: #ffbd4a;">{{Accepted.count}}</span>
+                                                </a>
+                                            </h4>
+                                        </div>
+
+                                        <div id="collapseOne-2" class="panel-collapse collapse in" >
+                                            <div class="panel-body">
+                                                <table class="table">
+													<thead>
+														<tr>
+
+															<th>Minion</th>
+															<th>saltserver</th>
+															<th>状态</th>
+                                                            <th>操作</th>
+														</tr>
+													</thead>
+													<tbody>
+                                                        {% for a in Accepted%}
+														<tr>
+
+															<td>{{a.minion}}</td>
+															<td>{{a.saltserver}}</td>
+															<td>{{a.status}}</td>
+                                                            <td>
+
+                                                                <button  class="btn btn-xs btn-info" onclick="Update('{{a.minion}}')" data-toggle="modal" data-target="#myModal">修改</button>
+
+                                                            </td>
+														</tr>
+                                                        {%endfor%}
+													</tbody>
+												</table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#accordion-test-2" href="#collapseTwo-2" class="collapsed" aria-expanded="false">
+                                                    未接受的Key <span class="badge badge-warning" style="margin-top: 0;background-color: #34d3eb;">{{Unaccepted.count}}</span>
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapseTwo-2" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                                            <div class="panel-body">
+                                                 <table class="table">
+													<thead>
+														<tr>
+
+															<th>Minion</th>
+															<th>saltserver</th>
+															<th>状态</th>
+                                                            <th>操作</th>
+														</tr>
+													</thead>
+													<tbody>
+                                                        {% for a in Unaccepted%}
+														<tr>
+
+															<td>{{a.minion}}</td>
+															<td>{{a.saltserver}}</td>
+															<td>{{a.status}}</td>
+                                                            <td>
+                                                                <button  class="btn btn-xs btn-info" onclick="Update('{{a.minion}}')" data-toggle="modal" data-target="#myModal">修改</button>
+
+                                                            </td>
+														</tr>
+                                                        {%endfor%}
+													</tbody>
+												</table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#accordion-test-2" href="#collapseFive-2" aria-expanded="false" class="collapsed" >
+                                                   已拒绝的Key <span class="badge badge-danger" style="margin-top: 0;background-color: #f05050;">{{Rejected.count}}</span>
+                                                </a>
+                                            </h4>
+                                        </div>
+
+                                        <div id="collapseFive-2" class="panel-collapse collapse" >
+                                            <div class="panel-body">
+                                                <table class="table">
+													<thead>
+														<tr>
+
+															<th>Minion</th>
+															<th>saltserver</th>
+															<th>状态</th>
+                                                            <th>操作</th>
+														</tr>
+													</thead>
+													<tbody>
+                                                        {% for a in Rejected%}
+														<tr>
+
+															<td>{{a.minion}}</td>
+															<td>{{a.saltserver}}</td>
+															<td>{{a.status}}</td>
+                                                            <td>
+                                                                <button  class="btn btn-xs btn-info" onclick="Update('{{a.minion}}')" data-toggle="modal" data-target="#myModal">修改</button>
+
+                                                            </td>
+														</tr>
+                                                        {%endfor%}
+
+													</tbody>
+												</table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                       <div id="myModal" class="modal fade " tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none; padding-right: 17px;">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                        <h4 class="modal-title" id="myModalLabel">Key状态修改</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <label for="field-1"  id="status" class="control-label">状态</label>
+                                            {{froms.status}}
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">取消</button>
+                                        <button type="button" class="btn btn-primary waves-effect waves-light" onclick="keyChange()">确认修改</button>
+                                    </div>
+                                </div><!-- /.modal-content -->
+                            </div><!-- /.modal-dialog -->
+                        </div>
+
+                   </div>
+              </div>
+        </div>
+   <script src="/static/assets/plugins/custombox/dist/custombox.min.js"></script>
+    <script src="/static/assets/plugins/custombox/dist/legacy.min.js"></script>
+    <script>
+        function Update(minion) {
+            var Selectminion =document.getElementById("myModal");
+            Selectminion.setAttribute('data-minion',minion);
+        };
+
+        function keyChange(){
+            var nowStatus = $('#id_status').val();
+            var Selectminion =document.getElementById("myModal");
+            $.ajax({
+                method: 'post',
+                url:'{% url 'KeyList' %}',
+                datatype: 'json',
+                data:{
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    status: nowStatus,
+                    minion: Selectminion.getAttribute('data-minion'),
+                },
+                success: function (data) {
+                    if(data == 'OK'){
+                        $('#myModal').modal('hide');
+                        location.href = '{% url 'KeyList' %}';
+                    }
+                },
+                error: function () {
+
+                }
+            });
+        }
+
+    </script>
+
+
+
+{% endblock %}

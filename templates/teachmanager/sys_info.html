@@ -1,0 +1,404 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <script src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="/static/assets/js/bootstrap-treeview.js"></script>
+    <script src="/static/assets/js/bootstarp.js"></script>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <h4 class="page-title">体系设置</h4>
+                <ol class="breadcrumb">
+                    <li>
+                        体系设置                      
+                    </li>
+                    <li class="active">
+                        新增体系
+                    </li>
+                </ol>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4 col-md-4 col-lg-4">
+                <div class="btn-group add">
+                    <button type="button" class="btn btn-primary dropdown-toggle add"
+                    data-toggle="dropdown">
+                        添加
+                    <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a onclick="addCategory()">添加体系</a></li>
+                        <li><a onclick="addModule()">添加模块</a></li>
+                    </ul>
+                </div>
+                <div class="btn-group add">
+                    <button type="button" class="btn btn-primary dropdown-toggle add"
+                    data-toggle="dropdown">
+                        编辑
+                    <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a onclick="editCategory()">编辑体系</a></li>
+                        <li><a onclick="editModule()">编辑模块</a></li>
+                    </ul>
+                </div>
+                <div class="tree" id="treeview"></div>
+            </div>
+            <div class="col-sm-8 col-md-8 col-lg-8 text">
+                <form role="form" id="category">
+                <h3>新增体系</h3>
+                    <div class="form-group">
+                        <label for="categoryName">体系名称</label>
+                        <input type="text" class="form-control" id="categoryName" placeholder="请输入体系名称">
+                    </div>
+                    <div class="form-group">
+                        <label for="categoryDetail">体系描述</label>
+                        <textarea type="text" class="form-control" id="categoryDetail" placeholder="请输入体系描述" rows="8"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" onclick="saveCategory()">保存</button>
+                </form>
+                <form role="form" id="module">
+                <h3>新增模块</h3>
+                    <div class="form-group">
+                        <label for="moduleSelect">所属体系</label>
+                        <select type="text" class="form-control" id="moduleSelect">
+                            <option value="" disabled selected>请选择体系</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="moduleName">模块名称</label>
+                        <input type="text" class="form-control" id="moduleName" placeholder="请输入模块名称">
+                    </div>
+                    <div class="form-group">
+                        <label for="moduleDetail">模块描述</label>
+                        <textarea type="text" class="form-control" id="moduleDetail" placeholder="请输入模块描述" rows="4"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="moduleContainer">选择镜像</label>
+                        <select type="text" class="form-control" id="moduleContainer">
+                            <option value="" disabled selected>请选择镜像</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="moduleIp">选择宿主机IP</label>
+                        <select type="text" class="form-control" id="moduleIp">
+                            <option value="" disabled selected>请选择宿主机IP</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="moduleHost">输入端口</label>
+                        <input type="text" class="form-control" id="moduleHost" placeholder="请输入端口">
+                    </div>
+                    <button type="submit" class="btn btn-primary" onclick="saveModule()">保存</button>
+                </form>
+                <form role="form" id="editCategory">
+                <h3>编辑体系</h3>
+                    <div class="form-group">
+                        <label for="editCategoryName">选择体系</label>
+                        <select type="text" class="form-control" id="editCategoryName">
+                            <option value="" disabled selected>请选择体系</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editCategoryDetail">体系描述</label>
+                        <textarea type="text" class="form-control" id="editCategoryDetail" placeholder="请输入体系描述" rows="8"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" onclick="saveEditCategory()">保存</button>
+                </form>
+                <form role="form" id="editModuleId">
+                <h3>编辑模块</h3>
+                    <div class="form-group">
+                        <label for="editModuleSelect">所属体系</label>
+                        <select type="text" class="form-control" id="editModuleSelect">
+                            <option value="" disabled selected>请选择体系</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editModuleName">模块名称</label>
+                        <select type="text" class="form-control" id="editModuleName">
+                            <option value="" disabled selected></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editModuleDetail">模块描述</label>
+                        <textarea type="text" class="form-control" id="editModuleDetail" placeholder="请输入模块描述" rows="4"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="editModuleContainer">选择镜像</label>
+                        <select type="text" class="form-control" id="editModuleContainer">
+                            <option value="" disabled selected>请选择镜像</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editModuleIp">选择宿主机IP</label>
+                        <select type="text" class="form-control" id="editModuleIp">
+                            <option value="" disabled selected>请选择宿主机IP</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editModuleHost">输入端口</label>
+                        <input type="text" class="form-control" id="editModuleHost" placeholder="请输入端口">
+                    </div>
+                    <button type="submit" class="btn btn-primary" onclick="saveEditModule()">保存</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var data = "{{Sysinfo}}";
+        data = data.replace(/&quot;/g,'"');
+        console.log(data);
+        var d="{{option}}";
+        d = d.replace(/&quot;/g,'"');
+        d=jQuery.parseJSON(d);
+        console.log(d);
+
+        var containerData = "{{Image}}";
+        containerData = containerData.replace(/&quot;/g,'"');
+        containerData=jQuery.parseJSON(containerData);
+        window,onload=function() {
+
+            for (i=0;i<d.length;i++) {
+                if (d[i].sysid) {
+                    $('#moduleSelect').append('<option value="'+d[i].sysid+'"">'+d[i].name+'</option>');
+                }
+            }
+            for (i=0; i<containerData.length;i++) {
+                $('#moduleContainer').append('<option value="'+containerData[i].repository+'"">'+containerData[i].repository+'</option>');
+            }
+            for (i=0; i<containerData.length;i++) {
+                $('#editModuleContainer').append('<option value="'+containerData[i].repository+'"">'+containerData[i].repository+'</option>');
+            }
+            $('#moduleContainer').change(function() {
+                var container = $('#moduleContainer option:selected').val();
+                var ip = document.getElementById('moduleIp');
+                ip.options.length = 0;
+                for (var i=0; i<containerData.length; i++) {
+                    if (container == containerData[i].repository) {
+                        $('#moduleIp').append('<option value="'+containerData[i].imagehost+'"">'+containerData[i].imagehost+'</option>');
+                    }
+                }
+            });
+            $('#editModuleContainer').change(function() {
+                var container = $('#editModuleContainer option:selected').val();
+                var ip = document.getElementById('editModuleIp');
+                ip.options.length = 0;
+                for (var i=0; i<containerData.length; i++) {
+                    if (container == containerData[i].repository) {
+                        $('#editModuleIp').append('<option value="'+containerData[i].imagehost+'"">'+containerData[i].imagehost+'</option>');
+                    }
+                }
+            });
+            function loadTree() {
+                $('#treeview').treeview({
+                    levels:1,
+                    data: data,
+                    onNodeSelected: function(event, data) {
+                        var nodeParent = $('#treeview').treeview('getNode', data.nodeId);
+                    }
+                });
+                    
+            };
+
+            loadTree();
+
+        }
+        var category = document.getElementById('category');
+        category.style.display = 'none';
+        var module = document.getElementById('module');
+        module.style.display = 'none';
+        var editCategorySelect = document.getElementById('editCategory');
+        console.log(editCategorySelect.innerHTML);
+        editCategorySelect.style.display = 'none';
+        var editModuleSelect = document.getElementById('editModuleId');
+        editModuleSelect.style.display = 'none';
+
+        var moduleInfo = "{{module}}";
+        moduleInfo = moduleInfo.replace(/&quot;/g,'"');
+        moduleInfo = jQuery.parseJSON(moduleInfo);
+        // console.log('moduleInfo', moduleInfo);
+        var editModuleId;
+        var editCategoryId;
+        var editCategoryNameId;
+
+
+        function addCategory() {
+            module.style.display = 'none';
+            category.style.display = 'block';
+            editCategorySelect.style.display = 'none';
+            editModuleSelect.style.display = 'none';
+        };
+        function addModule() {
+            category.style.display = 'none';
+            editCategorySelect.style.display = 'none';
+            editModuleSelect.style.display = 'none';
+            module.style.display = 'block';
+        }
+        function editCategory() {
+            category.style.display = 'none';
+            module.style.display = 'none';
+            editModuleSelect.style.display = 'none';
+            editCategorySelect.style.display = 'block';
+            for (var i = 0; i < moduleInfo.length; i++) {
+                if (moduleInfo[i].sysid) {
+                    $('#editCategoryName').append('<option value="'+moduleInfo[i].sysid+'"">'+moduleInfo[i].text+'</option>');
+                }
+            }
+        }
+        function editModule() {
+            category.style.display = 'none';
+            module.style.display = 'none';
+            editCategorySelect.style.display = 'none';
+            editModuleSelect.style.display = 'block';
+            for (var i = 0; i < moduleInfo.length; i++) {
+                if (moduleInfo[i].sysid) {
+                    $('#editModuleSelect').append('<option value="'+moduleInfo[i].sysid+'"">'+moduleInfo[i].text+'</option>');
+                }
+            }
+        }
+        $('#editModuleSelect').change(function() {
+            var editCategoryId = $('#editModuleSelect option:selected').val();
+            var editModule = document.getElementById('editModuleName');
+            editModule.options.length = 0;
+            for (var i=0; i<moduleInfo.length; i++) {
+                $('#editModuleName').append('<option disabled selected value></option>');
+                if (moduleInfo[i].sysid == editCategoryId) {
+                    for (var j=0; j<moduleInfo[i].nodes.length; j++) {
+                        $('#editModuleName').append('<option value="'+moduleInfo[i].nodes[j].sysid+'"">'+moduleInfo[i].nodes[j].text+'</option>');
+                    }
+                }
+            }
+        });
+        $('#editCategoryName').change(function() {
+            editCategoryNameId = $('#editCategoryName option:selected').val();
+            console.log('ajax', editCategoryNameId);
+            $.ajax({
+                type: 'GET',
+                url: '{% url 'syschange' %}',
+                data: {'categoryId':editCategoryNameId},
+                dataType: 'text',
+                success: function(msg) {
+                    msg = jQuery.parseJSON(msg);
+                    if (msg.sysinfo) {
+                        console.log(msg);
+                        var description = msg.sysinfo[0].description;
+                        document.getElementById("editCategoryDetail").value = description;
+                        // $('#editCategoryDetail').val() = description;
+                        console.log(msg.sysinfo[0].description);
+                    }
+                }
+            })
+        });
+        $('#editModuleName').change(function() {
+            editCategoryId = $('#editModuleSelect option:selected').val();
+            editModuleId = $('#editModuleName option:selected').val();
+            $.ajax({
+                type: 'GET',
+                url: '{% url 'syschange' %}',
+                data: {'categoryId':editModuleId},
+                dataType: 'text',
+                success: function(msg) {
+                    msg = jQuery.parseJSON(msg);
+                    console.log(msg);
+                    if (msg.sysinfo) {
+                        var description = msg.sysinfo[0].description;
+                        var imagehost = msg.sysinfo[0].imagehost;
+                        var port = msg.sysinfo[0].index_port;
+                        var repository = msg.sysinfo[0].repository;
+                        var imagehost = msg.sysinfo[0].imagehost;
+                        document.getElementById('editModuleDetail').value = description;
+                        document.getElementById('editModuleHost').value = port;
+                        document.getElementById('editModuleContainer').value = repository;
+                        for (var i=0; i<containerData.length; i++) {
+                            if (repository == containerData[i].repository) {
+                                $('#editModuleIp').append('<option value="'+containerData[i].imagehost+'"">'+containerData[i].imagehost+'</option>');
+                            }
+                        }
+                        document.getElementById('editModuleIp').value = imagehost;
+                    }
+                }
+            })
+        });
+        function saveCategory() {
+            var categoryName = $('#categoryName').val();
+            var categoryDetail = $('#categoryDetail').val();            
+            $.ajax({
+                type: 'POST',
+                url: '{% url 'sysList' %}',
+                data: {'name':categoryName,'description':categoryDetail,'parent_id':'-1'},
+                dataType: 'text',
+                success: function(msg){
+                }
+            });
+            document.location.reload();
+        }
+        function saveModule() {
+            var moduleName = $('#moduleName').val();
+            var moduleDetail = $('#moduleDetail').val();
+            var sysid = $('#moduleSelect').val();
+            var imagehost = $('#moduleIp').val();
+            var repository = $('#moduleContainer').val();
+            var port = $('#moduleHost').val();
+            console.log(imagehost, repository, port);
+            $.ajax({
+                type: 'POST',
+                url: '{% url 'sysList' %}',
+                data: {'name':moduleName,'description':moduleDetail, 'parent_id':sysid,'imagehost':imagehost,
+                "repository":repository,"port":port},
+                dataType: 'text',
+                success: function(msg){
+                }
+            });
+            document.location.reload();
+        }
+        function saveEditCategory() {
+            var categoryName = $('#editCategoryName').find("option:selected").text();
+            var categoryDetail = $('#editCategoryDetail').val();
+            var sysid = $('#editCategoryName option:selected').val();
+            console.log(categoryName, categoryDetail, sysid);
+            $.ajax({
+                type: 'POST',
+                url: '{% url 'syschange' %}',
+                data: {'name':categoryName,'description':categoryDetail,'parent_id':'-1','sysid': sysid},
+                dataType: 'text',
+                success: function(msg){
+                }
+            });
+            document.location.reload();
+        }
+        function saveEditModule() {
+            var moduleName = $('#editModuleName').find("option:selected").text();
+            var moduleDetail = $('#editModuleDetail').val();
+            var sysid = $('#editModuleSelect').val();
+            var imagehost = $('#editModuleIp').val();
+            var repository = $('#editModuleContainer').val();
+            var port = $('#editModuleHost').val();
+            var moduleid = $('#editModuleName').val();
+            console.log(moduleName, moduleDetail, sysid, imagehost, repository, port);
+            $.ajax({
+                type: 'POST',
+                url: '{% url 'syschange' %}',
+                data: {'name':moduleName,'description':moduleDetail, 'parent_id':sysid,'imagehost':imagehost,
+                "repository":repository,"port":port,'sysid':moduleid},
+                dataType: 'text',
+                success: function(msg){
+                }
+            });
+            document.location.reload();
+        }
+    </script>
+<style type="text/css">
+    .container {
+        margin-top: 0;
+        width: 100%;
+    }
+    .add {
+        margin-bottom: 15px;
+    }
+    .delete {
+        margin-bottom: 15px;
+    }
+</style>
+</html>
+
+{% endblock%}

@@ -1,0 +1,260 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container">
+
+        <!-- Page-Title -->
+        <div class="row">
+            <div class="col-sm-12">
+                <h4 class="page-title">SALT 管理</h4>
+                <ol class="breadcrumb">
+                    <li>
+                        <a href="{% url 'SaltMasterList' %}">SaltStack Master管理</a>
+                    </li>
+
+                    <li class="active">
+                        SaltStack Master列表
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-10">
+                <div class="row">
+                        <div class="col-sm-12">
+                           <button class="btn btn-primary waves-effect waves-light" data-toggle="modal" data-target="#con-close-modal">添加Master</button>
+                        </div>
+                    </div>
+                <br>
+                <div class="card-box">
+
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h4 class="m-t-0 header-title"><b>Master列表</b></h4>
+                            <div class="p-20">
+                                <table class="table table-striped m-0">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>url</th>
+                                            <th>用户名</th>
+                                            <th>角色</th>
+                                            <td>操作</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for salt in SaltMasterData%}
+                                        <tr>
+                                            <th scope="row" data-id="{{salt.id}}">{{salt.id}}</th>
+                                            <td>{{salt.url}}</td>
+                                            <td>{{salt.username}}</td>
+                                            <td>{{salt.role}}</td>
+                                             <td>
+                                                 <button    onclick="ModifyHost({{salt.id}})" class="btn btn-xs btn-info">修改</button>
+                                                 <button  class="btn btn-xs btn-danger" onclick="DeleteMaster({{salt.id}})" >删除</button>
+                                             </td>
+                                        </tr>
+                                        {% endfor%}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+
+
+ <div id="con-close-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">添加Master</h4>
+            </div>
+            <form role="form" method="POST">
+                {% csrf_token  %}
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="field-3" class="control-label">URL</label>
+                            {{form.url}}
+                            {{form.url.errors}}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="field-1" class="control-label">用户名</label>
+                                {{form.username}}
+                                {{form.username.errors}}
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="field-2" class="control-label">密码</label>
+                               {{form.password}}
+                                {{form.password.errors}}
+                            </div>
+                        </div>
+                    </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="field-3" class="control-label">角色</label>
+                             {{form.role}}
+                             {{form.role.errors}}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">取消</button>
+                <button type="submit"  class="btn btn-info waves-effect waves-light">添加</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div><!-- /.modal -->
+
+
+<div id="con-update-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">修改Master</h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="field-3" class="control-label">URL</label>
+                            <input type="text" class="form-control" id="url" value="" placeholder="http://127.0.0.1">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="field-1" class="control-label">用户名</label>
+                                <input type="text" class="form-control" id="username" value="" placeholder="username">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="field-2" class="control-label">密码</label>
+                                <input type="password" class="form-control" id="password" value="" placeholder="password">
+                            </div>
+                        </div>
+                    </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="field-3" class="control-label">角色</label>
+
+                           <select class="form-control" id="role" name="role">
+                               {% for r in Role%}
+                                <option value="{{r.0}}" selected="selected">{{r.1}}</option>
+                               {% endfor %}
+                           </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-info waves-effect " id="update" data-aa="" onclick="postMaster()">修改</button>
+            </div>
+
+        </div>
+    </div>
+</div><!-- /.modal -->
+
+
+<script>
+    function DeleteMaster(e) {
+        var iddd = e;
+        $.ajax({
+            url: '/salt/master/delete/' + iddd,
+            type: 'get',
+            dataType:'json',
+            success: function (data) {
+
+                $.Notification.autoHideNotify('success','top right','系统通知', data.msginfo);
+                setTimeout(function() {
+                                   location.href = '{% url 'SaltMasterList'  %}';
+                              },2500);
+
+            },
+            error: function () {
+
+            },
+
+        })
+    }
+
+    function postMaster(){
+        $.ajax({
+            url: '/salt/master/change/' + id,
+            type: 'POST',
+            dataType: 'json',
+            data:{
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                url: document.getElementById('url').value,
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value,
+                role: document.getElementById('role').value,
+            },
+            success: function (data) {
+
+                $('#con-update-modal').modal('hide');
+                  setTimeout(function() {
+                                   location.href = '{% url 'SaltMasterList'  %}';
+                              },2500);
+            },
+            error: function () {
+
+            }
+
+        })
+    }
+    // 全局id
+    var id = '';
+    function ModifyHost(e) {
+        $.ajax({
+            url: '/salt/master/change/' + e,
+            type: 'GET',
+            dataType:'json',
+            success: function (data) {
+                document.getElementById('url').value = data.url;
+                document.getElementById('username').value = data.username;
+                document.getElementById('password').value = data.password;
+                document.getElementById('role').value = data.role;
+                id = e;
+                $('#con-update-modal').modal('show');
+                
+            },
+            error: function () {
+                
+            }
+
+        })
+
+    }
+</script>
+
+
+
+{% endblock%}

@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<script src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://libs.baidu.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+<script src="/static/assets/js/simplemde.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+<script type="text/javascript" src="https://codeassign.github.io/markjax/dist/markjax.min.js"></script>
+
+<script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<link rel="stylesheet" type="text/css" href="/static/assets/css/pygment.css">
+<link rel="stylesheet" type="text/css" href="/static/assets/css/examQuestion.css">
+
+<script type="text/javascript">
+    experiment_id = "";
+    $(document).ready(function() {
+        var params = document.getElementById("params");
+        var text = document.getElementById("text");
+        // console.log(text);
+        var content = text.innerText;
+        console.log(content);
+        text.innerHTML = content;
+
+        var questionBox = document.getElementById("yd_box");
+        var questions = questionBox.innerText;
+        questionBox.innerHTML = questions;
+        console.log(questions);
+
+
+        var host = window.location.href;
+        if (host.indexOf('id')!=-1) {
+            var splitArr = host.split('id=');
+            var strList = splitArr[splitArr.length-1].split('&module=')
+            experiment_id = strList[0];
+            console.log(experiment_id);
+        }
+        resizeFrame();
+        setIframeSrc();
+    });
+    function setIframeSrc() {
+        var iframe = document.getElementById('webIDE');
+        var iframeLoadTimeout = setTimeout(function() {
+            if(window.stop) {
+                window.stop();
+            } else {
+                document.execCommand('Stop');
+            }
+        }, 10000);
+        iframe.onload = function() {
+            clearTimeout(iframeLoadTimeout);
+        };
+    }
+    function resizeFrame(obj) {
+        // var ifm= document.getElementById("webIDE");
+        var hei=document.documentElement.clientHeight;
+        document.getElementById("webIDE").style.height = hei + 'px';
+
+        // console.log('ifm.height', hei);
+    }
+    function fullText() {
+        var left=document.getElementById('left');
+        var right=document.getElementById('right');
+        var text=document.getElementById('fullText').innerText;
+        if (text=='全屏描述') {
+            left.setAttribute("class", "col-md-12 col-lg-12 text");
+            right.setAttribute("class", "col-md-0 col-lg-0 frame");
+            right.style.display="none";
+            document.getElementById('fullText').innerText='恢复';
+        } else {
+            right.style.display="inline";
+            left.setAttribute("class", "col-md-4 col-lg-4 text");
+            right.setAttribute("class", "col-md-8 col-lg-8 frame");
+            document.getElementById('fullText').innerText='全屏描述';
+        }
+    }
+    function fullIframe() {
+        var left=document.getElementById('left');
+        var right=document.getElementById('right');
+        var text=document.getElementById('fullIframe').innerText;
+        if (text=='全屏演示') {
+            left.setAttribute("class", "col-md-0 col-lg-0 text");
+            right.setAttribute("class", "col-md-12 col-lg-12 frame");
+            left.style.display="none";
+            document.getElementById('fullIframe').innerText='恢复';
+        } else {
+            left.style.display="inline";
+            left.setAttribute("class", "col-md-4 col-lg-4 text");
+            right.setAttribute("class", "col-md-8 col-lg-8 frame");
+            document.getElementById('fullIframe').innerText='全屏演示';
+        }
+    }
+    function submitAnswer(){
+        var answers = [];
+        $(".yd_box").children(".movie_box").each(function(index, question){      
+            var questionType = $(this).find(".tip_wz").text();
+            var answer = {};            
+            if (questionType == "【单选】") {
+                questionType = "0";
+            }else if (questionType == "【多选】") {
+                questionType = "1";
+            }else{
+                questionType = "2";
+            }
+            answer['questionType'] = questionType;
+            answer['gt'] = [];
+            switch (questionType){
+                case "0":
+                case "1":
+                    $(this).find(".options").each(function(i, option){
+                        var isAnswer = $(this).find("input[name=a]").prop("checked");
+                        if (isAnswer) {
+                            answer['gt'].push(i);
+                        }
+                    });
+                    break;
+                case "2":
+                    var ansString = $(this).find("textarea").val();
+                    answer['gt'].push(ansString);
+                    break;
+            }
+            answers.push(answer);
+
+        });
+        answers = JSON.stringify(answers);
+        console.log(answers); 
+        console.log(experiment_id);
+
+        $.ajax({
+            type: 'post',
+            url: "{% url 'experEdit' %}",
+            data: {'experiment_id':experiment_id, 'answers':answers},
+            dataType:'text',
+            success:function(msg) {
+                console.log(msg);
+            }
+        }); 
+
+    }
+</script>
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 col-lg-4 text" id="left">
+            <button type="submit" class="btn btn-sm btn-primary" id="fullText" onclick="fullText()">全屏描述</button>
+            <ul id="myTab" class="nav nav-tabs">
+                <li class="active">
+                    <a data-toggle="tab" href="#tab1">实验内容</a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#tab2">综合测试</a>
+                </li>            
+        
+            </ul>
+
+            <!-- <button type="submit" class="btn btn-sm btn-primary" id="fullText" onclick="fullText()">全屏描述</button> -->
+            <div id="myTabContent" class="tab-content">
+                <div class="tab-pane fade in active" id="tab1">
+                    <div id="params">
+                        {% for m in experdetail %}
+                        <div id="text">
+                            <pre>
+                            {{m.reserved1|linebreaksbr}}
+                            </pre>
+                        </div>              
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab2">
+                    <div class="yd_box" id="yd_box">
+                        {% for q in examQuestions %}                       
+                            {{q.examQuestions|linebreaksbr}}            
+                        {% endfor %}
+                    </div>
+                    <div class="ansnwer_box">
+                        {% for ans in answers %}
+                            {{ans.groundTruth}}
+                        {% endfor %}
+                    </div>
+                    <div class="button">
+                        <button type="button" class="btn btn-primary submit" onclick="submitAnswer()">提交</button>
+                    </div>                    
+
+                </div>
+
+            </div>
+
+        </div>
+        <div class="col-md-8 col-lg-8 frame" id="right">
+            <button type="submit" class="btn btn-sm btn-primary" id="fullIframe" onclick="fullIframe()">全屏演示</button>
+             <iframe src="{{url}}" class="webIDE" onload="resizeFrame(this)" id="webIDE"></iframe>
+        </div>
+    </div>
+</div>
+<style type="text/css">
+    #webIDE {
+        width: 100%;
+        /*height: 100%;*/
+    }
+    .text {
+        max-height:700px;
+        overflow: scroll;
+    }
+    .frame {
+        height:703px;
+    }
+</style>
+
+
+{% endblock%}

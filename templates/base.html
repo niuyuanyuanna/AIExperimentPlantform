@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="www.divmb.com creativity">
+<meta name="author" content="www.divmb.com">
+<link rel="shortcut icon" href="/static/assets/images/favicon_1.ico">
+<title>大数据AI教学与实验系统</title>
+<!--Morris Chart CSS -->
+
+<link rel="stylesheet" href="/static/assets/css/xterm.css" />
+<link rel="stylesheet" href="/static/assets/css/style.css" />
+<script src="/static/assets/js/xterm.js"></script>
+    <style>
+        #sidebar-menu ul ul a.hover {
+           color: #fff;
+            background-color: #5fbeaa;
+        }
+        #sidebar-menu ul ul a.hover:hover {
+           color: #fff;
+            background-color: #5fbeaa;
+        }
+    </style>
+{% include 'tempdir/head_css.html' %}
+
+{% include 'tempdir/head_script.html'%}
+
+</head>
+<body class="fixed-left">
+
+<!-- Begin page -->
+<div id="wrapper">
+  <!-- Top Bar Start -->
+  <div class="topbar">
+    <!-- LOGO -->
+    <div class="topbar-left">
+      <div class="text-center"> <a href="/" class="logo"><i class="icon-magnet icon-c-logo"></i><span>大数据AI教学与实验系统</span></a> </div>
+    </div>
+    <!-- Button mobile view to collapse sidebar menu -->
+    <div class="navbar navbar-default" role="navigation">
+      <div class="container">
+        <div class="">
+          <div class="pull-left">
+            <button class="button-menu-mobile open-left"> <i class="ion-navicon"></i> </button>
+            <span class="clearfix"></span> </div>
+          <form role="search" class="navbar-left app-search pull-left hidden-xs">
+            <input type="text" placeholder="搜索..." class="form-control">
+            <a href=""><i class="fa fa-search"></i></a>
+          </form>
+          <ul class="nav navbar-nav navbar-right pull-right">
+            <li class="hidden-xs"> <a href="#" id="btn-fullscreen" class="waves-effect waves-light"><i class="icon-size-fullscreen"></i></a> </li>
+            <li class="dropdown"> <a href="" class="dropdown-toggle profile" data-toggle="dropdown" aria-expanded="true"><img src="/static/assets/images/users/avatar-1.jpg" alt="user-img" class="img-circle"> </a>
+              <ul class="dropdown-menu">
+                <li><a href="{% url 'Userinfo' %}"><i class="ti-user m-r-5"></i> 个人信息</a></li>
+                <li><a href="{% url 'SysrestUserpassword' usersession %}"><i class="ti-settings m-r-5"></i> 重置密码</a></li>
+                <li><a href="{% url 'Logout' %}"><i class="ti-power-off m-r-5"></i> 退出系统</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <!--/.nav-collapse -->
+      </div>
+    </div>  <!--首页导航菜单-->
+  </div>
+
+  <!-- ========== Left Sidebar Start ========== -->
+  <div class="left side-menu">
+    <div class="sidebar-inner slimscrollleft">
+      <!--- Divider -->
+      <div id="sidebar-menu">
+        <ul>
+            {% if perms.webapp.system_index_view %}
+            <li> <a href="{% url 'index' %}" class="waves-effect "><i class="ti-home"></i> <span> 系统首页 </span></a> </li>
+            {%endif%}
+            
+            {% if perms.servermanager.assets_index_view %}
+                <li class="has_sub" id="index"> <a href="#" class="waves-effect"><i class="ti-menu"></i> <span>资产管理</span> </a>
+                <ul class="list-unstyled">
+                  <li><a href="{% url 'AssetsLists' 1  %}">资产表管理</a></li>
+                  <li><a href="{% url 'ServerList' 1  %}">服务器列表</a></li>
+                </ul>
+              </li>
+            {%endif%}
+            
+            {%if perms.dockermanager.docker_index_view%}
+               <li class="has_sub"> <a href="#" class="waves-effect"><i class="ti-server"></i> <span> 容器管理 </span> </a>
+                <ul class="list-unstyled">
+                  <li><a href="{% url 'DockerHosts' %}">主机列表</a></li>
+                  <li><a href="{% url 'Dockercontainerlist' 1 %}">容器列表</a></li>
+                  <li><a href="{% url 'DockerImages' 1 %}">镜像列表</a></li>
+                </ul>
+              </li>
+            {%endif%}
+
+            {%if perms.saltadmin.salt_index_view%}
+              <li class="has_sub"> <a href="#" class="waves-effect"><i class="ti-pencil-alt"></i><span> SALT管理 </span></a>
+                <ul class="list-unstyled">
+                  <li><a href="{% url 'SaltMasterList' %}">Master管理</a></li>
+                  <li><a href="{% url 'KeyList' %}">keys管理</a></li>
+                  <li><a href="{% url 'Minion_Status' %}">minion状态</a></li>
+                  <li><a href="{% url 'SoftInstall' %}">软件部署</a></li>
+                  <li><a href="{% url 'JobList' 1 %}">Job管理</a></li>
+                  <li><a href="{% url 'RemoteCmd' %}">批量执行</a></li>
+                </ul>
+              </li>
+            {%endif%}
+
+            {% if perms.teachmanager.view_teach_manage %}
+            <li class="has_sub"> <a href="#" class="waves-effect"><i class="ti-menu-alt"></i><span> 教学管理 </span></a>
+              <ul class="list-unstyled">
+                <li><a href="{% url 'sysList' %}">体系管理</a></li>
+                <li><a href="{% url 'experList' 1 %}">课程管理</a></li>
+                <!-- <li><a href="#">变更记录</a></li> -->
+              </ul>
+            </li>
+            {%endif%}
+
+
+          <li class="has_sub"> <a href="#" class="waves-effect"><i class="ti-menu-alt"></i><span> 学习管理 </span></a>
+            <ul class="list-unstyled">
+              <!-- <li><a href="http://testai.jinmensuyin.com/static/markdown_pic/readme/student-readme.html">实验说明</a></li> -->
+              <li><a href="#" onclick="openReadme()">实验说明</a></li>              
+              <li><a href="{% url 'learnlist' %}">上机实验</a></li>
+              <li><a href="{% url 'bglist' %}">大数据教学</a></li>
+              <li><a href="{% url 'pptlist' %}">AI教学</a></li>
+              <!-- <li><a href="#" onclick="openTest()">人才测评</a></li> -->
+            </ul>
+          </li>
+          
+          <li class="has_sub"> <a href="#" class="waves-effect"><i class=" ti-reload"></i><span> 项目演示 </span></a>
+            <ul class="list-unstyled">
+              <li><a href="#" onclick="openZi()">字体识别</a></li>
+              <li><a href="#" onclick="openHua()">花的识别</a></li>
+              <li><a href="#" onclick="openPicMigration()">图片风格迁移</a></li>
+              <li><a href="#" onclick="openCh2En()">汉译英</a></li>              
+              <li><a href="#" onclick="openEn2Ch()">英译汉</a></li>
+              <li><a href="#" onclick="openSpeechRecognition()">语音识别</a></li>
+              <!-- <li><a href="#">人脸识别</a></li> -->
+            </ul>
+          </li>
+
+          
+          {% if request.session.is_superuser %}
+          <li > <a href="/admin/" class="waves-effect"><i class=" ti-desktop"></i><span> 系统后台 </span></a></li>
+          {%endif%}
+          <!-- <li > <a href="/admin/" class="waves-effect"><i class=" ti-desktop"></i><span> 系统后台 </span></a> -->
+        </ul>
+        
+        <div class="clearfix"></div>
+      </div>
+      <div class="clearfix"></div>
+    </div>
+  </div>   <!--菜单-->
+  <!-- ============================================================== -->
+
+
+
+  <div class="content-page">
+    <!-- Start content -->
+
+    <div class="content">
+       {% block content %}
+
+       {% endblock %}
+      <!-- container -->
+    </div>
+    <!-- content -->
+    <footer class="footer text-right"> 2018 &copy; BUPT北邮  中教领智  大数据AI教学与实验课题组 </footer>
+  </div>  <!--首页内容-->
+  <!-- ============================================================== -->
+  <!-- Right Sidebar
+  <div class="side-bar right-bar nicescroll">
+    <h4 class="text-center">Chat</h4>
+    <div class="contact-list nicescroll">
+      <ul class="list-group contacts-list">
+        <li class="list-group-item"> <a href="#">
+          <div class="avatar"> <img src="/static/assets/images/users/avatar-1.jpg" alt=""> </div>
+          <span class="name">Chadengle</span> <i class="fa fa-circle online"></i> </a> <span class="clearfix"></span> </li>
+        <li class="list-group-item"> <a href="#">
+          <div class="avatar"> <img src="assets/images/users/avatar-2.jpg" alt=""> </div>
+          <span class="name">Tomaslau</span> <i class="fa fa-circle online"></i> </a> <span class="clearfix"></span> </li>
+        <li class="list-group-item"> <a href="#">
+          <div class="avatar"> <img src="assets/images/users/avatar-3.jpg" alt=""> </div>
+          <span class="name">Stillnotdavid</span> <i class="fa fa-circle online"></i> </a> <span class="clearfix"></span> </li>
+        <li class="list-group-item"> <a href="#">
+          <div class="avatar"> <img src="assets/images/users/avatar-4.jpg" alt=""> </div>
+          <span class="name">Kurafire</span> <i class="fa fa-circle online"></i> </a> <span class="clearfix"></span> </li>
+        <li class="list-group-item"> <a href="#">
+          <div class="avatar"> <img src="assets/images/users/avatar-5.jpg" alt=""> </div>
+          <span class="name">Shahedk</span> <i class="fa fa-circle away"></i> </a> <span class="clearfix"></span> </li>
+        <li class="list-group-item"> <a href="#">
+          <div class="avatar"> <img src="assets/images/users/avatar-6.jpg" alt=""> </div>
+          <span class="name">Adhamdannaway</span> <i class="fa fa-circle away"></i> </a> <span class="clearfix"></span> </li>
+        <li class="list-group-item"> <a href="#">
+          <div class="avatar"> <img src="assets/images/users/avatar-7.jpg" alt=""> </div>
+          <span class="name">Ok</span> <i class="fa fa-circle away"></i> </a> <span class="clearfix"></span> </li>
+        <li class="list-group-item"> <a href="#">
+          <div class="avatar"> <img src="assets/images/users/avatar-8.jpg" alt=""> </div>
+          <span class="name">Arashasghari</span> <i class="fa fa-circle offline"></i> </a> <span class="clearfix"></span> </li>
+        <li class="list-group-item"> <a href="#">
+          <div class="avatar"> <img src="assets/images/users/avatar-9.jpg" alt=""> </div>
+          <span class="name">Joshaustin</span> <i class="fa fa-circle offline"></i> </a> <span class="clearfix"></span> </li>
+        <li class="list-group-item"> <a href="#">
+          <div class="avatar"> <img src="assets/images/users/avatar-10.jpg" alt=""> </div>
+          <span class="name">Sortino</span> <i class="fa fa-circle offline"></i> </a> <span class="clearfix"></span> </li>
+      </ul>
+    </div>
+  </div>-->
+</div>
+{% include  "tempdir/foot_script.html" %}
+
+<script>
+    $(document).ready(function() {
+        var pathname = document.location.pathname;
+
+        $('#sidebar-menu .list-unstyled a').each(function(k,value) {
+            if($(value).attr('href') == pathname) {
+                $(value).addClass('hover').parents('.has_sub').find('.waves-effect').addClass('subdrop').next('.list-unstyled').css('display','block');
+            }
+        })
+    });
+    function openTest() {
+      window.open("http://www.a-pcc.com/exam.html");
+    }
+
+    function openZi() {
+      var host = window.location.href;
+      var host= host.split('/');
+      var url_writings="http://"+ host[2]+":5002";
+      window.open(url_writings);
+    }
+
+    function openHua() {
+      var host = window.location.href;
+      var host= host.split('/');
+      var url_flowers="http://"+ host[2]+":5003";
+      window.open(url_flowers);      
+    }
+
+    function openPicMigration() {
+      var host = window.location.href;
+      var host= host.split('/');
+      var url_PicMigration="http://"+ host[2]+":5004";
+      window.open(url_PicMigration);     
+    }
+
+    function openCh2En() {
+      var host = window.location.href;
+      var host= host.split('/');
+      var url_openCh2En="http://"+ host[2]+":5005"+"/toen";
+      window.open(url_openCh2En);
+    }
+
+    function openEn2Ch() {
+      var host = window.location.href;
+      var host= host.split('/');
+      var url_openEn2Ch="http://"+ host[2]+":5005"+"/toch";
+      window.open(url_openEn2Ch);      
+    }
+
+    function openSpeechRecognition() {
+      var host = window.location.href;
+      var host= host.split('/');
+      var url_SpeechRecognition="http://"+ host[2]+":5005"+"/record";
+      window.open(url_SpeechRecognition);     
+    }
+
+    function openReadme() {
+      var host = window.location.href;
+      var host= host.split('/');
+      var url_Readme="http://"+ host[2]+"/static/markdown_pic/readme/student-readme.html";   
+      window.open(url_Readme);            
+      // window.open("http://testai.jinmensuyin.com/static/markdown_pic/readme/student-readme.html");
+    }
+
+</script>
+</body>
+<style type="text/css">
+  .left side-menu {
+    width: 200px;
+  }
+</style>
+</html>

@@ -1,0 +1,295 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link href="/static/assets/plugins/datatables/jquery.dataTables.min.css" rel="stylesheet" type="text/css">
+<link href="/static/assets/plugins/bootstrap-table/dist/bootstrap-table.min.css" rel="stylesheet" type="text/css">
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <h4 class="page-title">教学管理</h4>
+            <ol class="breadcrumb">
+                <li>
+                      <a href="#">
+                    课程管理</a> 
+                    
+                </li>
+                <li class="active">
+                    <a href="{% url 'experList' 1 %}">课程列表</a>
+                </li>
+            </ol>
+        </div>
+    <div>
+         <button class="btn btn-primary addExperiment" onclick="addExperiment()">
+             新增实验
+         </button>
+                 
+                        <label for="category">选择体系</label>
+                        <select class="category" id="category">
+                            <option disabled selected value></option>
+                        </select>
+                        <label for="module">模块</label>
+                        <select class="module" id="module">
+                            <option disabled selected value></option>
+                        </select>
+                       <button class="btn btn-primary search" onclick="search()">
+                        查询
+                        </button>
+
+    </div>
+        <!-- Page-Title -->
+  
+   
+    <div class="row">
+        <div class="col-sm-10">
+
+           <div class="card-box">
+                  <form method="post" action="{% url 'experList' 1 %}">
+                <div class="row">
+                    <div class="col-sm-12">
+                         <div class="col-sm-8"><h4><b>实验列表</b></h4></div>
+                             <div class="col-sm-4">
+                                            <div class="input-group">
+                                                <input type="text" id="search" name="search" class="form-control" placeholder="输入关键词查找">
+                                                <span class="input-group-btn">
+                                                <button type="submit" class="btn waves-effect waves-light btn-primary"  ><i class="fa fa-search"></i></button>
+                                                </span>
+                                            </div>
+
+                                     </div>
+                                 </div>
+                             </div>
+                      <div class="p-20">
+                            <table class="table table-striped m-0" id="table">
+                                           
+                                <thead>
+                                    <tr>
+                                        <th>实验编号</th>
+                                        <th>实验名称</th>
+                                        <th>实验时长(分钟)</th>
+                                        <th>实验模块</th>
+                                        <th>创建人</th>
+                                        <th>操作</th>
+                                
+
+                                    </tr>
+                                </thead>
+
+                                <tbody id = "11">
+                                    {% for m in experinfo %}
+                                    <tr>
+                                        <th scope="row" data-id="{{m.experid}}">{{m.experid}}</th>
+                                        <td>
+                                        <a href="{% url 'experDetail' %}?id={{m.experid}}&module={{m.parent_id}}">{{m.name}}</a>
+                                        </td>
+                                        <td>{{m.duration}}</td>
+                                        <td>{{m.reserved2}}</td>
+                                        <td>{{m.creator}}</td>
+                                        <td>
+                                        {% if perms.teachmanager.change_experinfo %}
+                                        <button type="button" class="btn btn-xs btn-info" onclick="editRow({{m.experid}})" >编辑</button>
+                                        {%endif%}
+                                        {% if perms.teachmanager.delete_experinfo %}
+                                        <button type="button" class="btn btn-xs btn-info" onclick="deleteRow({{m.experid}})" >删除</button>
+                                        {%endif%}
+                                        </td>
+                                    </tr>
+                                    {% endfor%}
+                                </tbody>
+
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                        <nav>
+                        <ul id="page" class="pagination" >
+                            {{page}}
+                        </ul>
+                        </nav>
+                    </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="/static/assets/js/json.js"></script>
+
+<script>
+$(document).ready(function() {
+
+    var data = "{{module}}";
+    data = data.replace(/&quot;/g,'"');
+    data = jQuery.parseJSON(data);
+    console.log('data',data);
+    for (var i = 0; i < data.length; i++) {
+        if (data[i].sysid) {
+            $('#category').append('<option value="'+data[i].sysid+'"">'+data[i].text+'</option>');
+        }
+    }
+    if ($('#category option:selected').val()){
+        for (var i=0;i<data.length;i++) {
+            $('#module').append('<option disabled selected value></option>');
+            if (data[i].sysid == $('#category option:selected').val()) {
+                for (var j=0;j<data[i].nodes.length;j++) {
+                    $('#module').append('<option value="'+data[i].nodes[j].sysid+'"">'+data[i].nodes[j].text+'</option>');
+                }
+            }
+        }
+    }
+    $('#category').change(function() {
+        console.log('change');
+        var category = $('#category option:selected').val();
+        console.log('category',category);
+        var moduleText = document.getElementById('module');
+        moduleText.options.length = 0;
+        for (var i=0;i<data.length;i++) {
+            $('#module').append('<option disabled selected value></option>');
+            if (data[i].sysid == category) {
+                for (var j=0;j<data[i].nodes.length;j++) {
+                    $('#module').append('<option value="'+data[i].nodes[j].sysid+'"">'+data[i].nodes[j].text+'</option>');
+                }
+            }
+        }
+    });
+});
+function search() {
+    console.log('search');
+    var category_id = $('.category option:selected').val();
+    var module_id = $('.module option:selected').val();
+    var parent_id = '';
+    var str = '';
+    if (category_id && module_id) {
+        parent_id = module_id;
+        $.ajax({
+            type: 'GET',
+            url: '{% url 'classlist2' 1 %}',
+            data: {'id':parent_id},
+            dataType: 'text',
+            success: function(msg) {
+                console.log(msg)
+                document.getElementById('11').innerHTML='';
+                msg=jQuery.parseJSON(msg);
+                console.log(msg.experinfo);
+                if (msg.experinfo) {
+                   for (var i=0;i<msg.experinfo.length;i++) {
+                         str += '\
+                    <tr><th scope="row" data-id="'+msg.experinfo[i].experid +'">'+msg.experinfo[i].experid +'</th>\
+                    <td>\
+                     <a href="{% url 'experDetail' %}?id='+msg.experinfo[i].experid+'&module='+msg.experinfo[i].parent_id+'">'+msg.experinfo[i].name+'</a>\
+                    </td>\
+                    <td>'+msg.experinfo[i].duration+'</td>\
+                    <td>'+msg.experinfo[i].reserved2+'</td>\
+                    <td>'+msg.experinfo[i].creator+'</td>\
+                    <td>\
+                   \
+                <button type="button" class="btn btn-xs btn-info" onclick="editRow('+msg.experinfo[i].experid+')" >编辑</button>\
+                   \
+              <button type="button" class="btn btn-xs btn-info" onclick="deleteRow('+msg.experinfo[i].experid+')" >删除</button>\
+                   \
+                    </td></tr>\
+\
+                         ';
+           
+                   }
+                  console.log($('#page').html())
+                  $('#page').html = "";
+                  $('#page').html(msg.page);
+                  $('#11').innerHTML='';
+                 $('#11').append(str);
+             }
+            }
+        });
+    } else {
+        alert('请完整选择体系、模块！');
+        return;
+    }
+}
+
+
+
+
+
+
+
+    function addExperiment() {
+        window.location.href="{% url 'experEdit' %}"
+    }
+    function editRow(experid) {
+        $.ajax({
+            type: 'post',
+            url: '{% url 'experchange' %}',
+            data: {'id':experid},
+            dataType: 'json',
+            success: function(msg) {
+                console.log(msg['msg']);
+                if (msg['msg'] == 'success'){
+                     window.location.href="{% url 'experEdit' %}"+"?id="+experid;
+                }
+                else
+                    {
+                        alert(msg['msg']);
+                        return false;
+                    }
+            }
+        })
+    }
+    function deleteRow(id) {
+        console.log(id);
+        $.ajax({
+            type: 'post',
+            url: '{% url 'experDelete' %}',
+            data: {"id":id},
+            dataType: 'json',
+            success: function(msg) {
+                alert(msg['msg']);
+                return false;
+                // location.reload();
+            }
+        })
+    }
+    $(document).ready(function() {
+        var data = "{{experinfo}}";
+        console.log('experinfo', data);
+    });
+
+</script>
+<style type="text/css">
+    .addExperiment {
+        margin-bottom: 10px;
+    }
+</style>
+
+
+<style type="text/css">
+    .addExperiment {
+        margin-bottom: 10px;
+         margin-right: 50px;
+    }
+    #category {
+        width: 150px;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+    #module {
+        width: 150px;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+    .actionBar {
+        margin-bottom: 5px; 
+    }
+    .experimentId {
+        width: 60px;
+        text-align: center;
+    }
+    .experimentName {
+        width: 70%;
+        text-align: center;
+    }
+</style>
+
+{% endblock%}

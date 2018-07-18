@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+    </div>
+        <!-- Page-Title -->
+  
+    <div class="row">
+        <div class="col-sm-10">
+
+            <div class="card-box">
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h4 class="m-t-0 header-title"><b>ppt列表</b></h4>
+                        <div class="p-20">
+                            <table class="table table-striped m-0">
+                                <thead>
+                                    <tr>
+                                        <!-- <th>实验编号</th> -->
+                                        <th>实验名称</th>
+                                        <!-- <th>操作</th> -->
+                                        <!-- <th>pillwwar信息</th> -->
+
+                                    </tr>
+                                </thead>
+
+                                <tbody class="tableList">
+                                    <!-- <tr class="table" id="table">
+                                        <th scope="row" data-id="{{m.name}}">{{m.pptlist}}</th>
+                                        <td>
+                                        <a href="{% url 'experDetail' %}?id={{m.html}}">{{m.learnlist}}</a>
+                                        </td>
+                                    </tr> -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <tbody>
+        {% for m in experList %}
+        <tr>
+            <th scope="row" data-id="{{m.id}}">{{m.id}}</th>
+            <td>{{m.name}}</td>
+         </tr>
+        {% endfor%}
+    </tbody> -->
+</div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        var data = "{{file}}";
+        console.log(data);
+        // var data="{{option}}";
+        data = data.replace(/&quot;/g,'"');
+        data = jQuery.parseJSON(data);
+        console.log(data);
+        var str='';
+        for(var i=0;i<data.length;i++){
+            str += '<tr><<th><a href="'+data[i].html+'">'+data[i].name+'</a></th></tr>';
+            // str += '<tr><<th><a href=" onclick="openURL('+data[i].html+')">'+data[i].name+'</a></th></tr>';
+        }
+        $('.tableList').append(str);
+    });
+    function openURL(val) {
+        console.log(val);
+        window.open(val+'.html');
+    }
+</script>
+<style type="text/css">
+    .addExperiment {
+        margin-bottom: 10px;
+    }
+</style>
+
+{% endblock%}
